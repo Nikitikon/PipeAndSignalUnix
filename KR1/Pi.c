@@ -16,9 +16,11 @@
 #include <string.h>
 #include <signal.h>
 
+int flag = 1;
+
 void Exit (int sig)
 {
-    exit(0);
+    flag = 0;
 }
 
 int main(int argc, const char * argv[]) {
@@ -27,10 +29,12 @@ int main(int argc, const char * argv[]) {
     
     double const Const = 2 * sqrt(3);
     double result = 0;
-    for (int i = 0; i < 10000; i++) {
+    int i = 0;
+    while (flag){
         double temp = pow(-1, i) / pow(3, i);
         temp /= 2 * i + 1;
         result += temp * Const;
+        i++;
     }
     
     char buf[27];

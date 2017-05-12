@@ -18,13 +18,11 @@
 
 void alar (int sig)
 {
-    alarm(1);
+    return;
 }
 
 int main(int argc, const char * argv[]) {
-
     signal(SIGUSR1, alar);
-
     char* x = "1";
     
     int fdPi[2];
@@ -40,36 +38,38 @@ int main(int argc, const char * argv[]) {
     int pidExp;
     
     if ((pidPi = fork()) == 0) {
+        signal(SIGUSR1, alar);
+        kill(getppid(), SIGUSR1);
         pause();
-        printf("\nReadyPI\n");
         dup2(fdPi[1], 1);
         execl("/Users/nikita-mac/Desktop/UNIX/KR1/KR1/Pi", "/Users/nikita-mac/Desktop/UNIX/KR1/KR1/Pi", NULL);
         perror("Exec Pi");
         exit(0);
     }
-    
+    pause();
     if ((pidExp = fork()) == 0) {
+        signal(SIGUSR1, alar);
+        kill(getppid(), SIGUSR1);
         pause();
-        printf("\nReadyEXP\n");
         dup2(fdExp[1], 1);
         execl("/Users/nikita-mac/Desktop/UNIX/KR1/KR1/Exp", "/Users/nikita-mac/Desktop/UNIX/KR1/KR1/Exp", x, NULL);
         perror("Exec Exp");
         exit(0);
     }
     
-    
+    pause();
     kill(pidPi, SIGUSR1);
-    wait(&pidPi);
+    kill(pidPi, SIGUSR2);
+    waitpid(pidPi, NULL, 0);
     kill(pidExp, SIGUSR1);
-    wait(&pidExp);
-   // kill(pidPi, SIGUSR2);
     kill(pidExp, SIGUSR2);
+    waitpid(pidExp, NULL, 0);
     read(fdPi[0], bufPi, 27);
     read(fdExp[0], bufExp, 27);
 
     double Exp = atof(bufExp);
     double Pi = atof(bufPi);
-    Pi =sqrt(2 * Pi);
+    Pi = sqrt(2 * Pi);
     double result = Exp / Pi;
     printf("\n%f\n", result);
     return 0;
