@@ -59,11 +59,16 @@ int main(int argc, const char * argv[]) {
     
     pause();
     kill(pidPi, SIGUSR1);
-    kill(pidPi, SIGUSR2);
-    waitpid(pidPi, NULL, 0);
     kill(pidExp, SIGUSR1);
+    
+    sleep(1);
+    
+    kill(pidPi, SIGUSR2);
     kill(pidExp, SIGUSR2);
-    waitpid(pidExp, NULL, 0);
+
+    wait(&pidPi);
+    wait(&pidExp);
+    
     read(fdPi[0], bufPi, 27);
     read(fdExp[0], bufExp, 27);
 

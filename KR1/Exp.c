@@ -33,7 +33,10 @@ int main(int argc, const char * argv[]) {
     int n = 1;
     int i = 1;
     
-    while (i < 20) {
+    while (flag) {
+        if (i > 20) {
+            continue;
+        }
         n *= i;
         result += pow(parameter, i) / n;
         i++;
